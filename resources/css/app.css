@@ -105,6 +105,13 @@
     @media (width >= 64rem) { padding-inline: 2rem; }
 }
 
+/* Area tetap bisa di-scroll, tetapi batang scroll disembunyikan */
+@utility scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar { display: none; }
+}
+
 @utility font-display {
     font-family: var(--font-display);
     font-optical-sizing: auto;
