@@ -112,6 +112,16 @@
     &::-webkit-scrollbar { display: none; }
 }
 
+/* Scrollbar tipis untuk latar gelap: tanpa jalur putih, batang semi-transparan */
+@utility scrollbar-dark {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.28) transparent;
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.28); border-radius: 9999px; }
+    &::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.45); }
+}
+
 @utility font-display {
     font-family: var(--font-display);
     font-optical-sizing: auto;

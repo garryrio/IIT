@@ -59,7 +59,7 @@
                 <div class="leading-tight"><p class="font-display font-semibold text-white">Marga Mulya</p><p class="text-xs text-forest-300">CMS Desa</p></div>
                 <button type="button" class="ml-auto inline-flex size-10 items-center justify-center rounded-full hover:bg-white/10 lg:hidden" @click="nav = false" aria-label="Tutup menu"><x-lucide-x class="size-5" aria-hidden="true" /></button>
             </div>
-            <nav class="scrollbar-none relative min-h-0 flex-1 overflow-y-auto px-3 pb-6">
+            <nav data-sidebar-scroll class="scrollbar-dark relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-10 [mask-image:linear-gradient(to_bottom,black_calc(100%-2.5rem),transparent)]">
                 @foreach ($menu as $group => $items)
                     <p class="mt-5 mb-1 px-3 text-[0.7rem] font-bold tracking-widest text-forest-400 uppercase">{{ $group }}</p>
                     <ul>

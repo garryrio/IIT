@@ -24,6 +24,19 @@ Alpine.data('adminShell', () => ({
                 this.$refs.confirmDialog.showModal();
             }
         });
+
+        // Roda mouse di atas sidebar selalu menggulir menu (bukan halaman) selama menu masih bisa digulir.
+        const nav = document.querySelector('[data-sidebar-scroll]');
+        nav?.addEventListener('wheel', (e) => {
+            const max = nav.scrollHeight - nav.clientHeight;
+            if (max <= 0 || e.ctrlKey) return;
+            const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+            const next = Math.min(max, Math.max(0, nav.scrollTop + delta));
+            if (next !== nav.scrollTop) {
+                nav.scrollTop = next;
+                e.preventDefault();
+            }
+        }, { passive: false });
     },
     accept() {
         const form = this.confirm.form;
