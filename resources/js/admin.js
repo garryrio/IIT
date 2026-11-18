@@ -37,6 +37,29 @@ Alpine.data('adminShell', () => ({
                 e.preventDefault();
             }
         }, { passive: false });
+
+        // Pertahankan posisi gulir menu antarhalaman agar tidak "ketarik" ke atas setelah klik sub-menu.
+        if (nav) {
+            const KEY = 'cms-sidebar-scroll';
+            try {
+                const saved = Number(sessionStorage.getItem(KEY));
+                if (saved > 0) nav.scrollTop = saved;
+            } catch { /* penyimpanan tidak tersedia: abaikan */ }
+
+            // Pastikan menu yang sedang aktif tetap terlihat.
+            const active = nav.querySelector('[aria-current="page"]');
+            if (active) {
+                const a = active.getBoundingClientRect();
+                const n = nav.getBoundingClientRect();
+                if (a.top < n.top || a.bottom > n.bottom - 40) active.scrollIntoView({ block: 'center' });
+            }
+
+            const save = () => {
+                try { sessionStorage.setItem(KEY, String(Math.round(nav.scrollTop))); } catch { /* abaikan */ }
+            };
+            nav.addEventListener('click', save);
+            window.addEventListener('pagehide', save);
+        }
     },
     accept() {
         const form = this.confirm.form;
