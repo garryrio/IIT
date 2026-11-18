@@ -33,7 +33,7 @@ Website + CMS + Village Data Hub + Katalog Potensi + Community Platform untuk **
 | `/galeri` | Grid responsif, filter kategori, lightbox (keyboard ←/→/Esc), lazy loading |
 | `/kontak` | Info kontak, peta & navigasi, formulir pesan, formulir **Kontribusi Warga** (foto + lokasi GPS opsional) |
 
-Endpoint non-halaman: `/api/cari` (JSON smart search), `/media/{id}` (gambar), `/informasi/{slug}/kalender.ics`, `/sitemap.xml`, `/robots.txt`.
+Endpoint non-halaman: `/cari.json` (JSON smart search), `/media/{id}` (gambar), `/informasi/{slug}/kalender.ics`, `/sitemap.xml`, `/robots.txt`.
 
 **Fitur inovasi**
 1. **Village Data Hub** — semua statistik & jenis grafik dari database; alternatif teks/tabel yang aksesibel.

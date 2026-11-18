@@ -41,7 +41,7 @@ class VillageHubTest extends TestCase
     {
         $pages = collect(app('router')->getRoutes()->getRoutes())
             ->filter(fn ($r) => in_array('GET', $r->methods()))
-            ->reject(fn ($r) => str_starts_with($r->uri(), 'admin') || str_starts_with($r->uri(), 'api/')
+            ->reject(fn ($r) => str_starts_with($r->uri(), 'admin') || $r->uri() === 'cari.json'
                 || str_starts_with($r->uri(), 'media/') || str_ends_with($r->uri(), '.ics')
                 || in_array($r->uri(), ['sitemap.xml', 'robots.txt', 'up', 'storage/{path}']));
         $this->assertLessThanOrEqual(10, $pages->count(), $pages->map->uri()->implode(', '));
@@ -132,7 +132,7 @@ class VillageHubTest extends TestCase
 
     public function test_pencarian_mengelompokkan_hasil(): void
     {
-        $json = $this->getJson('/api/cari?q=posyandu')->assertOk()->json();
+        $json = $this->getJson('/cari.json?q=posyandu')->assertOk()->json();
         $this->assertGreaterThan(0, $json['total']);
         $this->assertNotEmpty(collect($json['groups'])->pluck('key')->intersect(['event', 'facility']));
     }

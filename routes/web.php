@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 /*
 | Halaman publik (9 route halaman — di bawah batas 10 halaman kompetisi):
 | /, /profil, /data-desa, /potensi, /potensi/{slug}, /informasi, /informasi/{slug}, /galeri, /kontak
-| Endpoint non-halaman: /api/cari (JSON), /media/{id} (gambar), /informasi/{slug}/kalender.ics, sitemap, robots.
+| Endpoint non-halaman: /cari.json (JSON), /media/{id} (gambar), /informasi/{slug}/kalender.ics, sitemap, robots.
 */
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/profil', [PageController::class, 'profile'])->name('profile');
@@ -28,7 +28,7 @@ Route::get('/kontak', [ContactController::class, 'show'])->name('contact');
 Route::post('/kontak/pesan', [ContactController::class, 'message'])->name('contact.message');
 Route::post('/kontak/kontribusi', [ContactController::class, 'contribute'])->name('contact.contribute');
 
-Route::get('/api/cari', SearchController::class)->middleware('throttle:60,1')->name('search');
+Route::get('/cari.json', SearchController::class)->middleware('throttle:60,1')->name('search');
 Route::get('/media/{id}/{name?}', MediaController::class)->whereNumber('id')->name('media');
 Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots']);

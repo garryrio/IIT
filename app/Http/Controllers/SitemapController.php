@@ -25,6 +25,6 @@ class SitemapController extends Controller
 
     public function robots(): Response
     {
-        return response("User-agent: *\nDisallow: /admin\nDisallow: /api/\n\nSitemap: ".route('sitemap')."\n", 200, ['Content-Type' => 'text/plain']);
+        return response("User-agent: *\nDisallow: /admin\nDisallow: /cari.json\n\nSitemap: ".route('sitemap')."\n", 200, ['Content-Type' => 'text/plain']);
     }
 }
