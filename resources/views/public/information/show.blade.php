@@ -32,7 +32,9 @@
 
             <aside class="space-y-5">
                 @if ($post->type === 'event' && $post->event_date)
-                    <div class="card p-6 lg:sticky lg:top-24">
+                    {{-- Kartu detail + peta lokasi menempel bersama sebagai satu blok agar tidak saling menimpa --}}
+                    <div class="space-y-5 lg:sticky lg:top-24">
+                    <div class="card p-6">
                         <h2 class="text-lg font-bold">Detail agenda</h2>
                         <dl class="mt-4 space-y-3">
                             <div class="flex gap-3"><x-lucide-calendar-days class="mt-0.5 size-5 shrink-0 text-forest-700" aria-hidden="true" /><div><dt class="text-sm text-ink-soft">Tanggal</dt><dd class="font-semibold">{{ $post->event_date->translatedFormat('l, d F Y') }}</dd></div></div>
@@ -48,8 +50,9 @@
                         @endunless
                     </div>
                     @if ($post->latitude)
-                        <x-village-map :markers="[['layer' => 'agenda', 'category' => 'agenda', 'categoryLabel' => 'Lokasi agenda', 'color' => '#c48a12', 'lat' => $post->latitude, 'lng' => $post->longitude, 'title' => $post->location ?: $post->title, 'text' => null, 'url' => null, 'image' => null]]" :center="[$post->latitude, $post->longitude]" :zoom="16" height="h-64" :list="false" label="Peta lokasi agenda" />
+                        <x-village-map :markers="[['layer' => 'agenda', 'category' => 'agenda', 'categoryLabel' => 'Lokasi agenda', 'color' => '#c48a12', 'lat' => $post->latitude, 'lng' => $post->longitude, 'title' => $post->location ?: $post->title, 'text' => null, 'url' => null, 'image' => null]]" :center="[$post->latitude, $post->longitude]" :zoom="16" height="h-56" :list="false" label="Peta lokasi agenda" />
                     @endif
+                    </div>
                 @elseif ($post->type === 'announcement')
                     <div class="card p-6">
                         <h2 class="text-lg font-bold">Masa berlaku</h2>

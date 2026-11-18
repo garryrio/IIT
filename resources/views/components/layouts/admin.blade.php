@@ -52,7 +52,7 @@
     <div class="flex min-h-screen">
         {{-- Sidebar --}}
         <div x-show="nav" x-cloak class="fixed inset-0 z-40 bg-black/40 lg:hidden" @click="nav = false"></div>
-        <aside class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-forest-950 text-forest-100 transition-transform lg:static lg:translate-x-0"
+        <aside class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-forest-950 text-forest-100 transition-transform lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:translate-x-0"
                :class="nav && 'translate-x-0'" aria-label="Menu CMS">
             <div class="flex h-16 items-center gap-3 px-5">
                 <x-brand-mark class="size-9" />
