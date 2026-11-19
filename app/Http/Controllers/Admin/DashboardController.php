@@ -39,6 +39,9 @@ class DashboardController extends Controller
             'announcements' => InformationPost::activeAnnouncements()->limit(5)->get(),
             'events' => InformationPost::upcomingEvents()->limit(5)->get(),
             'pending' => CitizenSubmission::where('status', 'pending')->latest()->limit(5)->get(),
+            // Agenda yang sudah lewat tetapi belum dijadikan berita laporan kegiatan.
+            'pastEvents' => InformationPost::where('type', 'event')->whereDate('event_date', '<', today())
+                ->doesntHave('report')->orderByDesc('event_date')->limit(5)->get(),
             'recent' => $recent,
             'households' => Household::count(),
         ]);

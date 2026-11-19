@@ -4,6 +4,7 @@ namespace App\Admin\Resources;
 
 use App\Admin\Field;
 use App\Admin\Resource;
+use App\Models\StatCategory;
 use App\Models\VillageStatistic;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rule;
@@ -24,11 +25,13 @@ class StatisticResource extends Resource
 
     public static function fields(): array
     {
-        $categories = VillageStatistic::query()->distinct()->orderBy('category')->pluck('category', 'category')->all();
+        $help = 'Indikator dengan kategori & tahun yang sama tampil dalam satu grafik. ';
+        $help .= auth()->user()?->isSuperAdmin()
+            ? 'Kategori baru dapat ditambahkan di menu Kategori statistik.'
+            : 'Kategori baru hanya dapat ditambahkan oleh super admin.';
 
         return [
-            Field::make('category', 'Kategori / kelompok grafik')->required()
-                ->help('Indikator dengan kategori & tahun yang sama tampil dalam satu grafik. Kategori yang ada: '.implode(', ', $categories)),
+            Field::make('category', 'Kategori / kelompok grafik', 'select')->options(StatCategory::options())->required()->help($help),
             Field::make('indicator', 'Indikator')->required()->placeholder('mis. Laki-laki'),
             Field::make('value', 'Nilai', 'number')->required()->rules(['min:0']),
             Field::make('unit', 'Satuan')->placeholder('jiwa, ha, unit, orang'),
@@ -60,7 +63,7 @@ class StatisticResource extends Resource
     public static function filters(): array
     {
         return [
-            'category' => ['label' => 'Kategori', 'options' => VillageStatistic::query()->distinct()->orderBy('category')->pluck('category', 'category')->all()],
+            'category' => ['label' => 'Kategori', 'options' => StatCategory::options()],
             'year' => ['label' => 'Tahun', 'options' => VillageStatistic::query()->distinct()->orderByDesc('year')->pluck('year', 'year')->all()],
         ];
     }

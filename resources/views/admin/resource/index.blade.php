@@ -48,6 +48,15 @@
                                 @endforeach
                                 <td class="text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1">
+                                        @foreach ($r::rowActions($item) as $act)
+                                            @if ($act['method'] === 'post')
+                                                <form method="POST" action="{{ $act['url'] }}">@csrf
+                                                    <button class="btn btn-sm bg-sun-300 text-ink hover:bg-sun-200"><x-lucide-newspaper class="size-4" aria-hidden="true" /> {{ $act['label'] }} <span class="sr-only">: {{ $r::title($item) }}</span></button>
+                                                </form>
+                                            @else
+                                                <a href="{{ $act['url'] }}" class="btn btn-outline btn-sm"><x-lucide-newspaper class="size-4" aria-hidden="true" /> {{ $act['label'] }} <span class="sr-only">: {{ $r::title($item) }}</span></a>
+                                            @endif
+                                        @endforeach
                                         @if ($r::hasStatus())
                                             <form method="POST" action="{{ route('admin.resource.status', [$r::$slug, $item->id]) }}">@csrf
                                                 <button class="btn btn-ghost btn-sm" title="{{ $item->status === 'published' ? 'Jadikan draf' : 'Terbitkan' }}">{{ $item->status === 'published' ? 'Jadikan draf' : 'Terbitkan' }}</button>

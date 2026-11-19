@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\HtmlString;
+use Illuminate\Validation\ValidationException;
 
 class PostResource extends Resource
 {
@@ -95,14 +96,25 @@ class PostResource extends Resource
         return ['updated_at', 'desc'];
     }
 
-    public static function query(Request $request): Builder
-    {
-        return InformationPost::query();
-    }
-
     public static function mutate(array $data, ?Model $model): array
     {
         $data = parent::mutate($data, $model);
+
+        // Berita laporan kegiatan (dari agenda) baru boleh terbit setelah ada foto dokumentasi & isi lengkap.
+        if ($model instanceof InformationPost && $model->source_event_id && ($data['status'] ?? null) === 'published') {
+            $errors = [];
+            $cover = array_key_exists('cover_image_url', $data) ? $data['cover_image_url'] : $model->cover_image_url;
+            if (! $cover) {
+                $errors['cover_image_url_file'] = 'Unggah foto dokumentasi kegiatan sebelum menerbitkan berita ini.';
+            }
+            if (str_contains((string) ($data['content'] ?? ''), InformationPost::REPORT_PLACEHOLDER)) {
+                $errors['content'] = 'Ganti teks "'.InformationPost::REPORT_PLACEHOLDER.'" dengan cerita jalannya kegiatan.';
+            }
+            if ($errors) {
+                throw ValidationException::withMessages($errors);
+            }
+        }
+
         if (($data['status'] ?? null) === 'published' && empty($data['published_at'])) {
             $data['published_at'] = $model?->published_at ?? now();
         }
@@ -116,5 +128,23 @@ class PostResource extends Resource
     public static function publicUrl(Model $m): ?string
     {
         return $m->status === 'published' ? route('information.show', $m->slug) : null;
+    }
+
+    public static function rowActions(Model $m): array
+    {
+        /** @var InformationPost $m */
+        if (! $m->canBecomeNews()) {
+            return [];
+        }
+        if ($m->report) {
+            return [['label' => 'Buka berita', 'url' => route('admin.resource.edit', ['informasi', $m->report->id, 'type' => 'news']), 'method' => 'get']];
+        }
+
+        return [['label' => 'Jadikan berita', 'url' => route('admin.events.report', $m->id), 'method' => 'post']];
+    }
+
+    public static function query(Request $request): Builder
+    {
+        return InformationPost::query()->with('report:id,source_event_id');
     }
 }

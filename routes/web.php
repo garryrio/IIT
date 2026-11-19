@@ -52,6 +52,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/kontribusi/{submission}/jadikan-berita', [Admin\SubmissionController::class, 'convert'])->name('submissions.convert');
         Route::delete('/kontribusi/{submission}', [Admin\SubmissionController::class, 'destroy'])->name('submissions.destroy');
 
+        Route::post('/agenda/{event}/jadikan-berita', Admin\EventReportController::class)->whereNumber('event')->name('events.report');
+
         Route::get('/kesejahteraan', [Admin\IncomeController::class, 'index'])->name('income.index');
         Route::get('/kesejahteraan/ekspor', [Admin\IncomeController::class, 'export'])->name('income.export');
 

@@ -107,6 +107,9 @@ class ResourceController extends Controller
         abort_if($r::$singleton, 404);
         $model = $r::$model::findOrFail($id);
         $title = $r::title($model);
+        if ($reason = $r::deleteBlockedReason($model)) {
+            return back()->withErrors(['hapus' => $reason]);
+        }
         DB::transaction(function () use ($r, $model) {
             foreach ($r::fields() as $f) {
                 if ($f->type === 'image') {
@@ -126,6 +129,10 @@ class ResourceController extends Controller
         abort_unless($r::hasStatus(), 404);
         $model = $r::$model::findOrFail($id);
         $publish = $model->status !== 'published';
+        if ($publish && $model instanceof InformationPost && $model->source_event_id
+            && (! $model->cover_image_url || str_contains((string) $model->content, InformationPost::REPORT_PLACEHOLDER))) {
+            return back()->withErrors(['hapus' => 'Berita "'.$model->title.'" belum lengkap. Buka beritanya, unggah foto dokumentasi dan tulis isi kegiatan sebelum menerbitkan.']);
+        }
         $data = ['status' => $publish ? 'published' : 'draft'];
         if ($publish && $model instanceof InformationPost && ! $model->published_at) {
             $data['published_at'] = now();

@@ -25,6 +25,9 @@ abstract class Resource
 
     public static bool $singleton = false;
 
+    /** Modul yang hanya boleh dibuka super admin (mis. kategori baku). */
+    public static bool $superAdminOnly = false;
+
     public static string $titleField = 'title';
 
     public const STATUS = ['draft' => 'Draf', 'published' => 'Terbit'];
@@ -72,6 +75,22 @@ abstract class Resource
     }
 
     public static function publicUrl(Model $m): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Tombol aksi tambahan per baris di tabel CMS.
+     *
+     * @return list<array{label:string, url:string, method:string}>
+     */
+    public static function rowActions(Model $m): array
+    {
+        return [];
+    }
+
+    /** Alasan data tidak boleh dihapus (null = boleh dihapus). */
+    public static function deleteBlockedReason(Model $m): ?string
     {
         return null;
     }

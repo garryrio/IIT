@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
                 'name' => $admin['name'],
                 'password' => $admin['password'],
                 'is_admin' => true,
+                'role' => 'super_admin',
             ]);
             $this->command?->info("Admin dibuat: {$admin['email']}");
         } else {

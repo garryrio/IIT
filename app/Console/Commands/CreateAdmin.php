@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CreateAdmin extends Command
 {
-    protected $signature = 'admin:create {email?} {--name=Admin Desa} {--password=}';
+    protected $signature = 'admin:create {email?} {--name=Admin Desa} {--password=} {--role= : super_admin atau admin}';
 
     protected $description = 'Membuat atau memperbarui akun admin CMS';
 
@@ -26,8 +26,18 @@ class CreateAdmin extends Command
             return self::FAILURE;
         }
 
-        User::updateOrCreate(['email' => $email], ['name' => $this->option('name'), 'password' => $password, 'is_admin' => true]);
-        $this->info("Admin {$email} siap digunakan. Login di /admin/login");
+        $role = $this->option('role');
+        if ($role !== null && ! array_key_exists($role, User::ROLES)) {
+            $this->error('Peran harus super_admin atau admin.');
+
+            return self::FAILURE;
+        }
+
+        $user = User::firstOrNew(['email' => $email]);
+        // Tanpa --role: akun lama mempertahankan perannya; akun baru jadi super admin bila belum ada super admin.
+        $role ??= $user->exists ? $user->role : (User::where('role', 'super_admin')->exists() ? 'admin' : 'super_admin');
+        $user->fill(['name' => $this->option('name'), 'password' => $password, 'is_admin' => true, 'role' => $role])->save();
+        $this->info("Akun {$email} ({$user->roleLabel()}) siap digunakan. Login di /admin/login");
 
         return self::SUCCESS;
     }

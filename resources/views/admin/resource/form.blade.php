@@ -131,9 +131,39 @@
                 @if ($r::$slug === 'data-kk')
                     <div class="rounded-2xl border border-sun-300 bg-sun-100 p-4 text-sm"><p class="font-bold">Privasi data</p><p class="mt-1">Data ekonomi KK hanya dapat dilihat admin dan tidak pernah ditampilkan per keluarga di website publik.</p></div>
                 @endif
+
+                @if ($model instanceof \App\Models\InformationPost && $exists)
+                    @if ($model->canBecomeNews())
+                        <div class="rounded-2xl border border-sun-300 bg-sun-100 p-4 text-sm">
+                            <p class="flex items-center gap-2 font-bold"><x-lucide-newspaper class="size-4" aria-hidden="true" /> Agenda sudah selesai</p>
+                            @if ($model->report)
+                                <p class="mt-1">Agenda ini sudah dijadikan berita.</p>
+                                <a href="{{ route('admin.resource.edit', ['informasi', $model->report->id, 'type' => 'news']) }}" class="btn btn-outline btn-sm mt-3 w-full">Buka berita</a>
+                            @else
+                                <p class="mt-1">Naikkan menjadi berita. Detail agenda terisi otomatis; Anda cukup menambah foto dokumentasi dan isi kegiatan.</p>
+                                <button type="submit" form="form-jadikan-berita" class="btn btn-primary btn-sm mt-3 w-full">Jadikan berita</button>
+                            @endif
+                        </div>
+                    @elseif ($model->source_event_id && $model->sourceEvent)
+                        @php $needsPhoto = ! $model->cover_image_url; $needsText = str_contains((string) $model->content, \App\Models\InformationPost::REPORT_PLACEHOLDER); @endphp
+                        <div class="rounded-2xl border border-forest-200 bg-forest-50 p-4 text-sm">
+                            <p class="font-bold">Laporan dari agenda</p>
+                            <a href="{{ route('admin.resource.edit', ['informasi', $model->source_event_id, 'type' => 'event']) }}" class="mt-1 block font-semibold text-forest-700 underline">{{ $model->sourceEvent->title }}</a>
+                            <p class="mt-3 font-semibold">Sebelum diterbitkan:</p>
+                            <ul class="mt-1 space-y-1">
+                                <li class="flex items-center gap-2">@if ($needsPhoto)<x-lucide-circle class="size-4 text-stone-400" aria-hidden="true" />@else<x-lucide-circle-check class="size-4 text-forest-700" aria-hidden="true" />@endif Foto dokumentasi (gambar sampul)<span class="sr-only">{{ $needsPhoto ? ': belum' : ': sudah' }}</span></li>
+                                <li class="flex items-center gap-2">@if ($needsText)<x-lucide-circle class="size-4 text-stone-400" aria-hidden="true" />@else<x-lucide-circle-check class="size-4 text-forest-700" aria-hidden="true" />@endif Isi jalannya kegiatan<span class="sr-only">{{ $needsText ? ': belum' : ': sudah' }}</span></li>
+                            </ul>
+                        </div>
+                    @endif
+                @endif
             </aside>
         </div>
     </form>
+
+    @if ($model instanceof \App\Models\InformationPost && $exists && $model->canBecomeNews() && ! $model->report)
+        <form id="form-jadikan-berita" method="POST" action="{{ route('admin.events.report', $model->id) }}" class="hidden">@csrf</form>
+    @endif
 
     @if ($exists && ! $isSingleton)
         <form method="POST" action="{{ route('admin.resource.destroy', [$r::$slug, $model->id]) }}" class="mt-6" data-confirm="Hapus &quot;{{ $r::title($model) }}&quot;? Tindakan ini tidak dapat dibatalkan.">

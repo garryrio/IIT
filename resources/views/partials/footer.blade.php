@@ -51,9 +51,6 @@
                     <p class="flex gap-2 text-forest-300"><x-lucide-info class="mt-0.5 size-4 shrink-0" aria-hidden="true" />{{ $site->demo_notice }}</p>
                 @endif
             </div>
-            <a href="{{ route('admin.login') }}" class="inline-flex min-h-10 items-center gap-1.5 self-start rounded-full border border-white/15 px-4 text-forest-100 hover:bg-white/10">
-                <x-lucide-lock class="size-4" aria-hidden="true" /> Masuk CMS
-            </a>
         </div>
     </div>
 </footer>

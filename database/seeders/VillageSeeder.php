@@ -12,6 +12,7 @@ use App\Models\InformationPost;
 use App\Models\Official;
 use App\Models\Potential;
 use App\Models\SiteSetting;
+use App\Models\StatCategory;
 use App\Models\Story;
 use App\Models\VillageProfile;
 use App\Models\VillageStatistic;
@@ -222,6 +223,10 @@ class VillageSeeder extends Seeder
         foreach (['Pos polisi' => 1, 'Anggota Linmas' => 32, 'Pos kamling' => 14, 'Jumlah RW' => 6, 'Jumlah RT' => 24] as $k => $v) {
             $this->stat('Pemerintahan & Keamanan', $k, $v, in_array($k, ['Anggota Linmas']) ? 'orang' : 'unit', 2025, 'cards', 80);
         }
+
+        // Daftar kategori baku untuk dropdown CMS, urut sesuai urutan tampil grafik.
+        VillageStatistic::query()->selectRaw('category, MIN(display_order) as ord')->groupBy('category')->orderBy('ord')->get()
+            ->each(fn ($row, $i) => StatCategory::firstOrCreate(['name' => $row->category], ['display_order' => $i + 1]));
     }
 
     private function potentials(): void

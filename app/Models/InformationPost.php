@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Concerns\HasStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 class InformationPost extends Model
@@ -92,5 +94,26 @@ class InformationPost extends Model
     public function url(): string
     {
         return route('information.show', $this->slug);
+    }
+
+    /** Penanda isi yang harus diganti admin sebelum berita laporan kegiatan boleh terbit. */
+    public const REPORT_PLACEHOLDER = '[Tuliskan jalannya kegiatan di sini]';
+
+    /** Agenda asal (untuk berita yang dibuat dari agenda yang sudah selesai). */
+    public function sourceEvent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'source_event_id');
+    }
+
+    /** Berita laporan yang dibuat dari agenda ini. */
+    public function report(): HasOne
+    {
+        return $this->hasOne(self::class, 'source_event_id');
+    }
+
+    /** Agenda yang sudah lewat dan dapat dijadikan berita. */
+    public function canBecomeNews(): bool
+    {
+        return $this->type === 'event' && $this->isPastEvent();
     }
 }

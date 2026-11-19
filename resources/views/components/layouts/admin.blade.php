@@ -14,6 +14,7 @@
             ['Perangkat desa', route('admin.resource.index', 'perangkat'), 'users', request()->is('admin/kelola/perangkat*'), null],
             ['Fasilitas umum', route('admin.resource.index', 'fasilitas'), 'building-2', request()->is('admin/kelola/fasilitas*'), null],
             ['Data & statistik', route('admin.resource.index', 'statistik'), 'chart-column', request()->is('admin/kelola/statistik*'), null],
+            ...(auth()->user()->isSuperAdmin() ? [['Kategori statistik', route('admin.resource.index', 'kategori-statistik'), 'tags', request()->is('admin/kelola/kategori-statistik*'), null]] : []),
         ],
         'Informasi' => collect(\App\Models\InformationPost::TYPES)->map(fn ($l, $k) => [
             $l, route('admin.resource.index', ['informasi', 'type' => $k]), ['news' => 'newspaper', 'announcement' => 'megaphone', 'event' => 'calendar-days', 'service' => 'file-text'][$k],
@@ -89,7 +90,7 @@
                 <button type="button" class="inline-flex size-10 items-center justify-center rounded-full hover:bg-stone-100 lg:hidden" @click="nav = true" aria-label="Buka menu"><x-lucide-menu class="size-5" aria-hidden="true" /></button>
                 <h1 class="truncate text-lg font-bold">{{ $title }}</h1>
                 <div class="ml-auto flex items-center gap-2 text-sm">
-                    <span class="hidden text-stone-600 sm:inline">{{ auth()->user()->name }}</span>
+                    <span class="hidden text-right leading-tight text-stone-600 sm:block">{{ auth()->user()->name }}<span class="block text-xs text-stone-500">{{ auth()->user()->roleLabel() }}</span></span>
                     <span class="flex size-9 items-center justify-center rounded-full bg-forest-800 font-bold text-white" aria-hidden="true">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
                 </div>
             </header>
@@ -103,7 +104,7 @@
                 @endif
                 @if ($errors->any())
                     <div class="mb-5 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-red-900" role="alert" tabindex="-1" x-init="$el.focus()">
-                        <p class="flex items-center gap-2 font-bold"><x-lucide-circle-alert class="size-5" aria-hidden="true" /> Gagal menyimpan — periksa {{ $errors->count() }} isian berikut:</p>
+                        <p class="flex items-center gap-2 font-bold"><x-lucide-circle-alert class="size-5" aria-hidden="true" /> {{ $errors->has('hapus') ? 'Tindakan tidak dapat diproses:' : 'Gagal menyimpan — periksa '.$errors->count().' isian berikut:' }}</p>
                         <ul class="mt-2 list-disc pl-8 text-sm">@foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
                     </div>
                 @endif

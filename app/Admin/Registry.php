@@ -13,6 +13,7 @@ class Registry
             Resources\OfficialResource::class,
             Resources\FacilityResource::class,
             Resources\StatisticResource::class,
+            Resources\StatCategoryResource::class,
             Resources\PostResource::class,
             Resources\PotentialResource::class,
             Resources\GalleryResource::class,
@@ -25,6 +26,9 @@ class Registry
     /** @return class-string<resource> */
     public static function find(string $slug): string
     {
-        return self::all()[$slug] ?? abort(404);
+        $r = self::all()[$slug] ?? abort(404);
+        abort_if($r::$superAdminOnly && ! auth()->user()?->isSuperAdmin(), 403, 'Modul ini hanya dapat diakses super admin.');
+
+        return $r;
     }
 }

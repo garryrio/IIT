@@ -24,6 +24,23 @@
         @endforeach
     </div>
 
+    @if ($pastEvents->isNotEmpty())
+        <section class="mt-6 rounded-2xl border border-sun-300 bg-sun-100 p-5" aria-labelledby="d-agenda-selesai">
+            <h3 id="d-agenda-selesai" class="flex items-center gap-2 font-bold"><x-lucide-newspaper class="size-5" aria-hidden="true" /> Agenda selesai yang belum dijadikan berita</h3>
+            <p class="mt-1 text-sm text-stone-700">Naikkan menjadi berita, lalu cukup tambahkan foto dokumentasi dan isi kegiatannya.</p>
+            <ul class="mt-3 divide-y divide-sun-300/60">
+                @foreach ($pastEvents as $e)
+                    <li class="flex flex-wrap items-center justify-between gap-3 py-2.5">
+                        <span><span class="font-semibold">{{ $e->title }}</span> <span class="text-sm text-stone-600">· {{ $e->event_date->translatedFormat('d M Y') }}</span></span>
+                        <form method="POST" action="{{ route('admin.events.report', $e->id) }}">@csrf
+                            <button class="btn btn-primary btn-sm">Jadikan berita <span class="sr-only">: {{ $e->title }}</span></button>
+                        </form>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
+    @endif
+
     <div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <section class="rounded-2xl border border-stone-200 bg-white p-5" aria-labelledby="d-kontribusi">
             <div class="flex items-center justify-between"><h3 id="d-kontribusi" class="font-bold">Kontribusi menunggu verifikasi</h3><a href="{{ route('admin.submissions.index', ['status' => 'pending']) }}" class="text-sm font-semibold text-forest-700 hover:underline">Semua</a></div>

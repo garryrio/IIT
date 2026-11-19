@@ -13,7 +13,7 @@
                 @if ($post->isExpired())
                     <p class="mb-6 flex gap-2 rounded-2xl border border-line bg-stone-100 p-4 font-semibold text-stone-700" role="note"><x-lucide-info class="mt-0.5 size-5 shrink-0" aria-hidden="true" />Pengumuman ini sudah berakhir pada {{ $post->end_date->translatedFormat('d F Y') }} dan disimpan sebagai arsip.</p>
                 @elseif ($post->isPastEvent())
-                    <p class="mb-6 flex gap-2 rounded-2xl border border-line bg-stone-100 p-4 font-semibold text-stone-700" role="note"><x-lucide-info class="mt-0.5 size-5 shrink-0" aria-hidden="true" />Agenda ini telah selesai dilaksanakan.</p>
+                    <p class="mb-6 flex gap-2 rounded-2xl border border-line bg-stone-100 p-4 font-semibold text-stone-700" role="note"><x-lucide-info class="mt-0.5 size-5 shrink-0" aria-hidden="true" /><span>Agenda ini telah selesai dilaksanakan.@if (($report = $post->report) && $report->isPublished() && (! $report->published_at || $report->published_at->isPast())) <a href="{{ $report->url() }}" class="link">Baca laporan kegiatannya →</a>@endif</span></p>
                 @endif
                 @if ($post->cover_image_url)
                     <img src="{{ $post->cover_image_url }}" alt="Gambar sampul: {{ $post->title }}" width="1200" height="800" class="aspect-[16/9] w-full rounded-[2rem] object-cover shadow-[var(--shadow-lift)]">
