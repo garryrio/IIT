@@ -57,10 +57,9 @@ class PageController extends Controller
         $years = $all->pluck('year')->unique()->sortDesc()->values();
         $categories = $all->pluck('category')->unique()->values();
 
-        $year = (int) $request->query('tahun', $years->first());
-        if (! $years->contains($year)) {
-            $year = (int) $years->first();
-        }
+        // Tanpa filter tahun (null): setiap grafik memakai tahun terbarunya sendiri, sehingga kategori yang
+        // belum punya data tahun terbaru tidak ikut hilang. Dengan filter: tampilkan tepat tahun tersebut.
+        $year = $request->filled('tahun') && $years->contains((int) $request->query('tahun')) ? (int) $request->query('tahun') : null;
         $category = $request->query('kategori');
         if ($category && ! $categories->contains($category)) {
             $category = null;
@@ -71,7 +70,7 @@ class PageController extends Controller
             ->filter(fn ($rows, $cat) => ! $category || $cat === $category)
             ->map(function ($rows, $cat) use ($year) {
                 $type = $rows->sortBy('display_order')->first()->chart_type;
-                $selected = $type === 'line' ? $rows->sortBy('year') : $rows->where('year', $year);
+                $selected = $type === 'line' ? $rows->sortBy('year') : $rows->where('year', $year ?? $rows->max('year'));
                 if ($selected->isEmpty()) {
                     return null;
                 }
@@ -87,7 +86,9 @@ class PageController extends Controller
                 ];
             })->filter()->values();
 
-        $highlights = $all->where('year', $year)->where('is_highlight', true)->unique('indicator')->values();
+        $highlights = $all->where('is_highlight', true)
+            ->when($year, fn ($c) => $c->where('year', $year), fn ($c) => $c->sortByDesc('year'))
+            ->unique('indicator')->sortBy('display_order')->values();
 
         $income = null;
         if (SiteSetting::current()->show_income_summary && IncomeClass::query()->exists()) {

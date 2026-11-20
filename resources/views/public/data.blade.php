@@ -6,15 +6,16 @@
             <div class="lg:w-48">
                 <label for="tahun" class="label">Tahun data</label>
                 <select id="tahun" name="tahun" class="input" onchange="this.form.submit()">
-                    @foreach ($years as $y)<option value="{{ $y }}" @selected($y == $year)>{{ $y }}</option>@endforeach
+                    <option value="" @selected(! $year)>Data terbaru</option>
+                    @foreach ($years as $y)<option value="{{ $y }}" @selected($y === $year)>{{ $y }}</option>@endforeach
                 </select>
             </div>
             <div class="flex-1">
                 <span class="label" id="kategori-label">Kategori</span>
                 <div class="flex flex-wrap gap-2" role="group" aria-labelledby="kategori-label">
-                    <a href="{{ route('data', ['tahun' => $year]) }}" class="chip" @if (! $category) aria-current="page" @endif>Semua</a>
+                    <a href="{{ route('data', array_filter(['tahun' => $year])) }}" class="chip" @if (! $category) aria-current="page" @endif>Semua</a>
                     @foreach ($categories as $c)
-                        <a href="{{ route('data', ['tahun' => $year, 'kategori' => $c]) }}" class="chip" @if ($category === $c) aria-current="page" @endif>{{ $c }}</a>
+                        <a href="{{ route('data', array_filter(['tahun' => $year, 'kategori' => $c])) }}" class="chip" @if ($category === $c) aria-current="page" @endif>{{ $c }}</a>
                     @endforeach
                 </div>
             </div>
@@ -23,11 +24,11 @@
 
         @if ($highlights->isNotEmpty() && ! $category)
             <section aria-labelledby="ringkasan-judul" class="mt-10">
-                <h2 id="ringkasan-judul" class="text-xl font-bold">Ringkasan {{ $year }}</h2>
+                <h2 id="ringkasan-judul" class="text-xl font-bold">{{ $year ? 'Ringkasan '.$year : 'Ringkasan data terbaru' }}</h2>
                 <dl class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4" data-stagger>
                     @foreach ($highlights as $h)
                         <div class="card p-5">
-                            <dt class="text-sm font-semibold text-ink-soft">{{ $h->indicator }}</dt>
+                            <dt class="text-sm font-semibold text-ink-soft">{{ $h->indicator }}@unless ($year) ({{ $h->year }})@endunless</dt>
                             <dd class="mt-1 font-display text-3xl font-semibold text-forest-900 sm:text-4xl"><span data-count="{{ $h->value }}" data-decimals="{{ floor($h->value) == $h->value ? 0 : 1 }}">{{ $h->formattedValue() }}</span> <span class="font-sans text-base text-ink-soft">{{ $h->unit }}</span></dd>
                         </div>
                     @endforeach

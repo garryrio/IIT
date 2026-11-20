@@ -8,6 +8,7 @@ use App\Models\IncomeClass;
 use App\Models\InformationPost;
 use App\Models\Potential;
 use App\Models\User;
+use App\Models\VillageStatistic;
 use Database\Seeders\VillageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -145,5 +146,19 @@ class VillageHubTest extends TestCase
 
         $kk = Household::firstOrFail();
         $this->get('/data-desa')->assertOk()->assertDontSee($kk->head_name)->assertDontSee($kk->household_code);
+    }
+
+    public function test_data_tahun_baru_satu_kategori_tidak_menghilangkan_grafik_lain(): void
+    {
+        // Admin menambah data tahun baru hanya untuk satu kategori
+        VillageStatistic::create(['category' => 'Tren Jumlah Penduduk', 'indicator' => 'Jumlah penduduk', 'value' => 6900,
+            'unit' => 'jiwa', 'year' => 2026, 'chart_type' => 'line', 'is_published' => true]);
+
+        // Default (data terbaru): kategori lain tetap tampil dengan tahun terbarunya masing-masing
+        $this->get('/data-desa')->assertOk()
+            ->assertSee('Penggunaan Lahan')->assertSee('Mata Pencaharian Pokok')->assertSee('Data terbaru');
+
+        // Filter eksplisit 2026: hanya kategori yang punya data 2026 (dan tren) yang tampil
+        $this->get('/data-desa?tahun=2026')->assertOk()->assertDontSee('Grafik Penggunaan Lahan');
     }
 }
